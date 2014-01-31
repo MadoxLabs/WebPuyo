@@ -18,8 +18,8 @@ Game.init = function ()
   this.dropspeed = 1;
   this.gameover = false;
 
-  this.playerOne = new Player(1, 40, 67, 334, 25);
-  this.playerTwo = new Player(2, 522, 57, 438, 25);
+  this.playerOne = new Player(1, 40, 71, 334, 30);
+  this.playerTwo = new Player(2, 522, 71, 438, 30);
 
   document.addEventListener('keydown', onKeyDown, false);
   document.addEventListener('keyup', onKeyUp, false);
