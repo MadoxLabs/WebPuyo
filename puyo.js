@@ -18,8 +18,8 @@ Game.init = function ()
   this.dropspeed = 1;
   this.gameover = false;
 
-  this.playerOne = new Player(1, 40, 57, 334, 15);
-  this.playerTwo = new Player(2, 522, 57, 438, 15);
+  this.playerOne = new Player(1, 40, 67, 334, 25);
+  this.playerTwo = new Player(2, 522, 57, 438, 25);
 
   document.addEventListener('keydown', onKeyDown, false);
   document.addEventListener('keyup', onKeyUp, false);
@@ -106,9 +106,7 @@ function onKeyUp(e)
   if (e.keyCode == 37) Game.playerOne.movedir = 0;
   if (e.keyCode == 40) Game.dropspeed = 1;
   if (e.keyCode == 65) Game.playerOne.moveCW();
-  if (e.keyCode == 66) Game.playerOne.current[0].startPath(1);
-  if (e.keyCode == 67) {
-  }
+  if (e.keyCode == 83) Game.playerOne.moveCCW();
 }
 
 /*
@@ -128,11 +126,9 @@ function main()
  *
 
  Pathing for rotating
- rotating the other way
  sounds
  eliminating
  animation for elimination
- rotation logic
  hooks for adding AI algorithms
  multiplayer
  remove player 1 hard coding

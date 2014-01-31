@@ -62,26 +62,142 @@ Player.prototype.moveCW = function()
 {
   if (this.split) return;
 
-  if (this.current[0].celx == this.current[1].celx+1) 
+  // rotate from 9 to 12
+  if (this.current[0].celx == this.current[1].celx + 1)
   {
+    this.current[1].x = this.current[0].x; this.current[1].celx = this.current[0].celx;
+    this.current[1].y -= Game.spritesize;  this.current[1].cely--;
+  }
+
+  // rotate from 3 to 6
+  else if (this.current[0].celx == this.current[1].celx - 1)
+  {
+    // if no room, we have to move current0 up one
+    if (this.current[1].celx == 11 || this.cels[this.current[1].celx][this.current[0].cely+1]) 
+    {
+      this.current[0].y -= Game.spritesize; this.current[0].cely--;
+      this.current[1].x = this.current[0].x; this.current[1].celx = this.current[0].celx;
+    }
+    else
+    {
+      this.current[1].x = this.current[0].x; this.current[1].celx = this.current[0].celx;
+      this.current[1].y += Game.spritesize; this.current[1].cely++;
+    }
+  }
+
+  // rotate from 12 to 3
+  else if (this.current[0].cely == this.current[1].cely + 1)
+  {
+    // if no room, we have to move current0 left one
+    if (this.current[1].celx == 5 || this.cels[this.current[1].celx + 1][this.current[0].cely])
+    {
+      // if cant move, do a rotate from 12 to 6
+      if (this.current[0].celx == 0 || this.cels[this.current[0].celx-1][this.current[0].cely]) 
+      {
+        this.current[1].y += 2*Game.spritesize;  this.current[1].cely += 2;
+      }
+      else
+      {
+        this.current[0].x -= Game.spritesize;  this.current[0].celx--;
+        this.current[1].y = this.current[0].y; this.current[1].cely = this.current[0].cely;
+      }
+    }
+    else
+    {
+      // rotate normally
+      this.current[1].y = this.current[0].y; this.current[1].cely = this.current[0].cely;
+      this.current[1].x += Game.spritesize; this.current[1].celx++;
+    }  
+  }
+
+  // rotate from 6 to 9
+  else if (this.current[0].cely == this.current[1].cely - 1)
+  {
+    // if no room, we have to move current0 right one
+    if (this.current[1].celx == 0 || this.cels[this.current[1].celx - 1][this.current[0].cely]) 
+    {
+      // if cant move, do a rotate from 6 to 12
+      if (this.current[0].celx == 5 || this.cels[this.current[0].celx+1][this.current[0].cely])
+      {
+        this.current[1].y -= 2 * Game.spritesize; this.current[1].cely -= 2;
+      }
+      else
+      {
+        this.current[0].x += Game.spritesize; this.current[0].celx++;
+        this.current[1].y = this.current[0].y; this.current[1].cely = this.current[0].cely;
+      }
+    }
+    else
+    {
+      // rotate normally
+      this.current[1].y = this.current[0].y; this.current[1].cely = this.current[0].cely;
+      this.current[1].x -= Game.spritesize; this.current[1].celx--;
+    }
+  }
+}
+
+Player.prototype.moveCCW = function ()
+{
+  if (this.split) return;
+
+  // rotate from 3 to 12
+  if (this.current[0].celx == this.current[1].celx - 1) {
     this.current[1].x = this.current[0].x; this.current[1].celx = this.current[0].celx;
     this.current[1].y -= Game.spritesize; this.current[1].cely--;
   }
-  else if (this.current[0].celx == this.current[1].celx - 1) {
-    this.current[1].x = this.current[0].x; this.current[1].celx = this.current[0].celx;
-    this.current[1].y += Game.spritesize; this.current[1].cely++;
-  }
-  else if (this.current[0].cely == this.current[1].cely + 1) {
-    this.current[1].y = this.current[0].y; this.current[1].cely = this.current[0].cely;
-    this.current[1].x += Game.spritesize; this.current[1].celx++;
-  }
-  else if (this.current[0].cely == this.current[1].cely - 1) {
-    this.current[1].y = this.current[0].y; this.current[1].cely = this.current[0].cely;
-    this.current[1].x -= Game.spritesize; this.current[1].celx--;
+
+  // rotate from 9 to 6
+  else if (this.current[0].celx == this.current[1].celx + 1) {
+    // if no room, we have to move current0 up one
+    if (this.current[1].celx == 11 || this.cels[this.current[1].celx][this.current[0].cely + 1]) {
+      this.current[0].y -= Game.spritesize; this.current[0].cely--;
+      this.current[1].x = this.current[0].x; this.current[1].celx = this.current[0].celx;
+    }
+    else {
+      this.current[1].x = this.current[0].x; this.current[1].celx = this.current[0].celx;
+      this.current[1].y += Game.spritesize; this.current[1].cely++;
+    }
   }
 
-  if (this.current[1].x < 0 || this.current[1].x >= 6 * Game.spritesize) this.moveCW();
-  if (this.puyoWillLand(this.current[1])) this.moveCW();
+  // rotate from 6 to 3
+  else if (this.current[0].cely == this.current[1].cely - 1) {
+    // if no room, we have to move current0 left one
+    if (this.current[1].celx == 5 || this.cels[this.current[1].celx + 1][this.current[0].cely]) {
+      // if cant move, do a rotate from 6 to 12
+      if (this.current[0].celx == 0 || this.cels[this.current[0].celx - 1][this.current[0].cely]) {
+        this.current[1].y -= 2 * Game.spritesize; this.current[1].cely -= 2;
+      }
+      else {
+        this.current[0].x -= Game.spritesize; this.current[0].celx--;
+        this.current[1].y = this.current[0].y; this.current[1].cely = this.current[0].cely;
+      }
+    }
+    else {
+      // rotate normally
+      this.current[1].y = this.current[0].y; this.current[1].cely = this.current[0].cely;
+      this.current[1].x += Game.spritesize; this.current[1].celx++;
+    }
+  }
+
+  // rotate from 12 to 9
+  else if (this.current[0].cely == this.current[1].cely + 1) {
+    // if no room, we have to move current0 right one
+    if (this.current[1].celx == 0 || this.cels[this.current[1].celx - 1][this.current[0].cely]) {
+      // if cant move, do a rotate from 12 to 6
+      if (this.current[0].celx == 5 || this.cels[this.current[0].celx + 1][this.current[0].cely]) {
+        this.current[1].y += 2 * Game.spritesize; this.current[1].cely += 2;
+      }
+      else {
+        this.current[0].x += Game.spritesize; this.current[0].celx++;
+        this.current[1].y = this.current[0].y; this.current[1].cely = this.current[0].cely;
+      }
+    }
+    else {
+      // rotate normally
+      this.current[1].y = this.current[0].y; this.current[1].cely = this.current[0].cely;
+      this.current[1].x -= Game.spritesize; this.current[1].celx--;
+    }
+  }
 }
 
 Player.prototype.makeCelPuyo = function (x, y)
