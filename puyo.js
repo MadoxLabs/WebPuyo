@@ -134,7 +134,6 @@ function soundPlay(name)
       audiochannels[a]['channel'].src = document.getElementById(name).src;
       audiochannels[a]['channel'].load();
       audiochannels[a]['channel'].play();
-      audiochannels[a]['channel'].volume(0.5);
       break;
     }
   }
