@@ -110,12 +110,44 @@ function onKeyUp(e)
 }
 
 /*
+ * SOUND (RUDAMENTARY)
+ */
+var channel_max = 10;
+var audiochannels = new Array();
+var thistime;
+
+function soundInit()
+{
+  for (a = 0; a < channel_max; a++) {									// prepare the channels
+    audiochannels[a] = new Array();
+    audiochannels[a]['channel'] = new Audio();				// create a new audio object
+    audiochannels[a]['finished'] = -1;						  	// expected end time for this channel
+  }
+}
+
+function soundPlay(name)
+{
+  for (a = 0; a < audiochannels.length; a++) {
+    thistime = new Date();
+    if (audiochannels[a]['finished'] < thistime.getTime()) {			// is this channel finished?
+      audiochannels[a]['finished'] = thistime.getTime() + document.getElementById(name).duration * 1000;
+      audiochannels[a]['channel'].src = document.getElementById(name).src;
+      audiochannels[a]['channel'].load();
+      audiochannels[a]['channel'].play();
+      break;
+    }
+  }
+
+}
+
+/*
  * MAIN
  *
  * Creates game and hands over control to it
  */
 function main()
 {
+  soundInit();
   Game.init();
   window.setInterval(Game.run, 17);
 }
@@ -126,7 +158,9 @@ function main()
  *
 
  Pathing for rotating
- sounds
+ allow some spins after landing
+ sound basics
+ sound effects
  eliminating
  animation for elimination
  hooks for adding AI algorithms

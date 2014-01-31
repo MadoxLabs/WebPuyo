@@ -62,6 +62,8 @@ Player.prototype.moveCW = function()
 {
   if (this.split) return;
 
+  soundPlay("spin");
+
   // rotate from 9 to 12
   if (this.current[0].celx == this.current[1].celx + 1)
   {
@@ -139,6 +141,8 @@ Player.prototype.moveCW = function()
 Player.prototype.moveCCW = function ()
 {
   if (this.split) return;
+
+  soundPlay("spin");
 
   // rotate from 3 to 12
   if (this.current[0].celx == this.current[1].celx - 1) {
@@ -254,6 +258,8 @@ Player.prototype.puyoLand = function (p)
   p.origspritex = image;
   p.spritey = p.origspritey;
   p.spritex = image;
+
+  soundPlay("land");
   return true;
 }
 
