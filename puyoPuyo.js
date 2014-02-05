@@ -4,15 +4,23 @@
  * Maintains the state of a puyo at a certain location. This class mainly controls the sprite animation states of the puyo
  * location x and y do not include the board offsets
  */
-function Puyo()
+var stageInactive = 0;
+var stageDropping = 1;
+var stageLanded = 2;
+var stageNext = 3;
+var stageWaiting = 4;
+
+function Puyo(p)
 {
+  this.player = p;
+
   this.spritex = 0;
   this.spritey = 0;
   this.origspritex = 0;
   this.origspritey = 0;
   this.x = 0;
   this.y = 0;
-  this.stage = 0;
+  this.stage = stageInactive;
 
   this.path = 0;
   this.pcurframe = 0;
@@ -63,21 +71,14 @@ Puyo.prototype.shift = function (x, y)
 Puyo.prototype.update = function ()
 {
   this.time++;
-  if (this.stage == 1)
-    // temp hack for now
-  {
-    if (Game.playerOne.split == 1)
-      this.y += 6;
-    else
-      this.y += Game.dropspeed;
-  }
+  if (this.stage == stageDropping) this.y += this.player.controller.dropspeed;
 
   this.celx = Math.floor(this.x / Game.spritesize);
   this.cely = Math.floor(this.y / Game.spritesize);
 
   // if landed, and not animating and chance
   var chance = Math.random();
-  if (this.stage == 2 && this.origspritex == 0 && this.animation == 0 && chance < 0.005)
+  if (this.stage == stageLanded && this.origspritex == 0 && this.animation == 0 && chance < 0.005)
   {
     if (this.spritey == 8) this.startAnimate(1);  // animate purple upon landing
     if (this.spritey == 2) this.startAnimate(2); // same for other colours
@@ -86,7 +87,7 @@ Puyo.prototype.update = function ()
     if (this.spritey == 0) this.startAnimate(5);
   }
 
-  if (this.stage == 3 && this.origspritex == 0 && this.animation == 0 && chance < 0.02) {
+  if (this.stage == stageNext && this.origspritex == 0 && this.animation == 0 && chance < 0.02) {
     if (this.spritey == 0) this.startAnimate(6);
     if (this.spritey == 2) this.startAnimate(7); // same for other colours
     if (this.spritey == 4) this.startAnimate(8);
@@ -128,8 +129,8 @@ Puyo.prototype.update = function ()
       if (this.pcurframe >= p.x.length)           // last frame? 
       {
         // special events
-        if (this == Game.playerOne.next[1] && this.path == 3) Game.playerOne.trigger(eventLaunchPiece);
-        if (this == Game.playerOne.nextnext[1]) Game.playerOne.trigger(eventNextReady);
+        if (this == this.player.next[1] && this.path == 3) this.player.trigger(eventLaunchPiece);
+        if (this == this.player.nextnext[1]) this.player.trigger(eventNextReady);
         // done
         this.pcurframe = 0;
         this.path = 0;
@@ -159,7 +160,7 @@ Puyo.prototype.startPath = function (a)
 
 Puyo.prototype.stop = function ()
 {
-  this.stage = 2;
+  this.stage = stageLanded;
   this.animation = 0;
 }
 

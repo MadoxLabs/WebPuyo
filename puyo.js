@@ -77,7 +77,7 @@ Game.run = function ()
 Game.update = function ()
 {
   Game.playerOne.update();
-//  Game.playerTwo.update();
+  Game.playerTwo.update();
 }
 
 Game.draw = function ()
@@ -95,18 +95,14 @@ Game.draw = function ()
 
 function onKeyDown(e)
 {
-  if (e.keyCode == 39) Game.playerOne.movedir = 1;
-  if (e.keyCode == 37) Game.playerOne.movedir = -1;
-  if (e.keyCode == 40) Game.dropspeed = 5; 
+  Game.playerOne.controller.inputKeyDown(e);
+  Game.playerTwo.controller.inputKeyDown(e);
 }
 
 function onKeyUp(e)
 {
-  if (e.keyCode == 39) Game.playerOne.movedir = 0;
-  if (e.keyCode == 37) Game.playerOne.movedir = 0;
-  if (e.keyCode == 40) Game.dropspeed = 1;
-  if (e.keyCode == 65) Game.playerOne.moveCW();
-  if (e.keyCode == 83) Game.playerOne.moveCCW();
+  Game.playerOne.controller.inputKeyUp(e);
+  Game.playerTwo.controller.inputKeyUp(e);
 }
 
 /*
@@ -134,6 +130,7 @@ function soundPlay(name)
       audiochannels[a]['channel'].src = document.getElementById(name).src;
       audiochannels[a]['channel'].load();
       audiochannels[a]['channel'].play();
+      audiochannels[a]['channel'].volume = 0.2;
       break;
     }
   }
@@ -159,7 +156,6 @@ function main()
 
  Pathing for rotating
  allow some spins after landing
- sound basics
  sound effects
  eliminating
  animation for elimination

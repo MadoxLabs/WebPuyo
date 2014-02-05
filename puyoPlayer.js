@@ -2,6 +2,43 @@ var eventAllPiecesLanded = 1;
 var eventLaunchPiece = 2;
 var eventNextReady = 3;
 
+function Controller(p)
+{
+  this.dropspeed = 1;
+  this.movedir = 0;
+  this.player = p;
+  
+  this.normalSpeed = 1;
+  this.fastSpeed = 5;
+  this.resolveSpeed = 6;
+}
+
+Controller.prototype.speedUp = function()
+{
+  this.dropspeed = this.fastSpeed;
+}
+
+Controller.prototype.speedDown = function()
+{
+  this.dropspeed = this.normalSpeed;
+}
+
+Controller.prototype.inputKeyDown = function (e)
+{
+  if (e.keyCode == 39) this.movedir = 1;
+  if (e.keyCode == 37) this.movedir = -1;
+  if (e.keyCode == 40) this.speedUp();
+}
+
+Controller.prototype.inputKeyUp = function (e)
+{
+  if (e.keyCode == 39) this.movedir = 0;
+  if (e.keyCode == 37) this.movedir = 0;
+  if (e.keyCode == 40) this.speedDown();
+  if (e.keyCode == 65) this.player.moveCW();
+  if (e.keyCode == 83) this.player.moveCCW();
+}
+
 /*
  * PLAYER CLASS
  *
@@ -13,6 +50,7 @@ function Player(p, x, y, nx, ny)
   this.rand.seed(Game.seed);
 
   this.player = p;
+  this.controller = new Controller(this);
   this.offx = x;
   this.offy = y;
   this.nextoffx = nx;
@@ -27,7 +65,6 @@ function Player(p, x, y, nx, ny)
   this.cels = [[], [], [], [], [], []];
 
   this.movecounter = 0;
-  this.movedir = 0;
   this.split = 0;
   this.drawnext = true;
 
@@ -206,8 +243,8 @@ Player.prototype.moveCCW = function ()
 
 Player.prototype.makeCelPuyo = function (x, y)
 {
-  var p = new Puyo;
-  p.stage = 1;
+  var p = new Puyo(this);
+  p.stage = stageDropping;
   p.define(0, 2 * ((this.rand.pop() * 5) | 0));
   p.place(x * Game.spritesize, y * Game.spritesize);
   return p;
@@ -215,8 +252,8 @@ Player.prototype.makeCelPuyo = function (x, y)
 
 Player.prototype.makePuyo = function (x, y)
 {
-  var p = new Puyo;
-  p.stage = 3;
+  var p = new Puyo(this);
+  p.stage = stageNext;
   p.define(0, 2 * ((this.rand.pop() * 5) | 0));
   p.place(x, y);
   return p;
@@ -269,24 +306,27 @@ Player.prototype.update = function ()
   // check the lower one first
   if (this.current[1].y > this.current[0].y)
   {
-    if (this.current[1].stage == 1 && this.puyoWillLand(this.current[1])) {
+    if (this.current[1].stage == stageDropping && this.puyoWillLand(this.current[1])) {
       this.puyoLand(this.current[1]);
       this.split++;
     }
 
-    if (this.current[0].stage == 1 && this.puyoWillLand(this.current[0])) {
+    if (this.current[0].stage == stageDropping && this.puyoWillLand(this.current[0]))
+    {
       this.puyoLand(this.current[0]);
       this.split++;
     }
   }
   else
   {
-    if (this.current[0].stage == 1 && this.puyoWillLand(this.current[0])) {
+    if (this.current[0].stage == stageDropping && this.puyoWillLand(this.current[0]))
+    {
       this.puyoLand(this.current[0]);
       this.split++;
     }
 
-    if (this.current[1].stage == 1 && this.puyoWillLand(this.current[1])) {
+    if (this.current[1].stage == stageDropping && this.puyoWillLand(this.current[1]))
+    {
       this.puyoLand(this.current[1]);
       this.split++;
     }
@@ -300,8 +340,8 @@ Player.prototype.update = function ()
   if (this.movecounter > movepollrate)
   {
     this.movecounter = 0;
-    if (this.movedir > 0) this.moveRight();
-    if (this.movedir < 0) this.moveLeft();
+    if (this.controller.movedir > 0) this.moveRight();
+    if (this.controller.movedir < 0) this.moveLeft();
   }
 
   // advance the downward motion of the current puyos
@@ -353,8 +393,8 @@ Player.prototype.trigger = function(e)
       this.current[0].clone(this.next[1]); // ya I know
       this.current[0].startAnimate(11 + this.current[0].spritey/2);
       this.current[1].clone(this.next[0]);
-      this.current[0].stage = 4; // dont drop
-      this.current[1].stage = 4;
+      this.current[0].stage = stageWaiting; // dont drop
+      this.current[1].stage = stageWaiting;
 
       this.next[0].startPath(3);
       this.next[1].startPath(3);
@@ -362,8 +402,8 @@ Player.prototype.trigger = function(e)
 
   if (e == eventLaunchPiece)
   {
-    this.current[0].stage = 1; // drop
-    this.current[1].stage = 1;
+    this.current[0].stage = stageDropping; // drop
+    this.current[1].stage = stageDropping;
     this.drawnext = false;
 //    this.next[0].startPath(4);
 //    this.next[1].startPath(4);
